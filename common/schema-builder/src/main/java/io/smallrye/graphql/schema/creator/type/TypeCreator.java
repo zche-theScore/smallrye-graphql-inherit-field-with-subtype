@@ -52,11 +52,12 @@ public class TypeCreator extends AbstractCreator {
         for (ClassInfo c = classInfo; c != null; c = ScanningContext.getIndex().getClassByName(c.superName())) {
             if (InterfaceCreator.canAddInterfaceIntoScheme(c.toString())) { // Not java objects
                 List<MethodInfo> classMethods = filterOutBridgeMethod(c.methods());
-                allMethods.addAll(classMethods);
+                // First add interface methods then add class methods, to make sure class methods (return) type overrides
                 allMethods.addAll(getAllInterfaceMethods(c, classMethods
                         .stream()
                         .map(MethodInfo::toString)
                         .collect(Collectors.toSet())));
+                allMethods.addAll(classMethods);
                 for (FieldInfo fieldInfo : c.fields()) {
                     allFields.putIfAbsent(fieldInfo.name(), fieldInfo);
                 }
